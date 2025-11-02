@@ -1,7 +1,8 @@
-"use client" // Indica que este componente se ejecuta del lado del cliente (usa hooks como useState)
+"use client"
 
-import { ShoppingCart } from "lucide-react" // Ícono del carrito (de la librería lucide-react)
+import { ShoppingCart } from "lucide-react"
 import { useState } from "react"
+import Image from "next/image"
 
 // Interfaz que define cómo debe lucir un producto
 interface Product {
@@ -19,39 +20,35 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  // Estado para mostrar temporalmente si el producto fue agregado al carrito
   const [isAdded, setIsAdded] = useState(false)
 
-  // Función que se ejecuta al hacer clic en el botón del carrito
   const handleAddToCart = () => {
-    setIsAdded(true) // Marca el producto como agregado
-    // Luego de 2 segundos, vuelve al estado original
+    setIsAdded(true)
     setTimeout(() => setIsAdded(false), 2000)
   }
 
   return (
-    // Tarjeta principal del producto
-    <div className="bg-card rounded-lg overflow-hidden group cursor-pointer hover:shadow-lg transition-shadow">
+    <div className="bg-card rounded-2xl overflow-hidden group cursor-pointer hover:shadow-xl transition-all duration-300">
       
       {/* Imagen del producto */}
-      <div className="relative bg-muted h-64 md:h-72 overflow-hidden">
-        <img
-          src={product.image || "/placeholder.svg"} // Si no hay imagen, usa una de respaldo
+      <div className="relative bg-muted aspect-[4/5] w-full overflow-hidden">
+        <Image
+          src={product.image || "/placeholder.svg"}
           alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          fill
+          className="object-cover transition-transform duration-500 group-hover:scale-105 group-active:scale-100"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+          priority={product.id <= 4}
         />
 
         {/* Botón de agregar al carrito */}
         <button
           onClick={handleAddToCart}
-          className={`
-            absolute bottom-4 right-4 p-3 rounded-full transition-all
-            ${
-              isAdded
-                ? "bg-accent text-accent-foreground" // Cambia color cuando el producto se agrega
-                : "bg-primary text-primary-foreground hover:bg-opacity-90"
-            }
-          `}
+          className={`absolute bottom-3 right-3 p-3 rounded-full shadow-md transition-all ${
+            isAdded
+              ? "bg-accent text-accent-foreground scale-110"
+              : "bg-primary text-primary-foreground hover:scale-110 hover:bg-opacity-90"
+          }`}
         >
           <ShoppingCart className="w-5 h-5" />
         </button>
@@ -62,13 +59,10 @@ export default function ProductCard({ product }: ProductCardProps) {
         <h3 className="font-bold text-foreground text-sm md:text-base mb-1">{product.name}</h3>
         <p className="text-xs md:text-sm text-muted-foreground mb-3">{product.variant}</p>
 
-        {/* Precio y estado */}
         <div className="flex items-center justify-between">
-          {/* Precio con formato de moneda local (colombiana) */}
           <span className="text-lg md:text-xl font-bold text-primary">
             ${product.price.toLocaleString("es-CO")}
           </span>
-          {/* Estado: muestra "✓ Agregado" por 2 segundos al hacer clic */}
           <span className="text-xs font-medium text-muted-foreground">
             {isAdded ? "✓ Agregado" : "En stock"}
           </span>

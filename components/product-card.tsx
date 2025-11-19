@@ -1,35 +1,38 @@
-"use client"
+"use client";
 
-import { ShoppingCart } from "lucide-react"
-import { useState } from "react"
-import Image from "next/image"
+import { ShoppingCart } from "lucide-react";
+import { useState } from "react";
+import Image from "next/image";
 
 // Interfaz que define cómo debe lucir un producto
 interface Product {
-  id: number
-  name: string
-  category: string
-  variant: string
-  price: number
-  image: string
+  id: string;
+  name: string;
+  category: string;
+  variant: string;
+  price: number;
+  image: string;
 }
 
 // Props que recibe el componente ProductCard (en este caso, un solo producto)
 interface ProductCardProps {
-  product: Product
+  product: Product;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const [isAdded, setIsAdded] = useState(false)
+  const [isAdded, setIsAdded] = useState(false);
 
   const handleAddToCart = () => {
-    setIsAdded(true)
-    setTimeout(() => setIsAdded(false), 2000)
-  }
+    setIsAdded(true);
+    setTimeout(() => setIsAdded(false), 2000);
+  };
+
+  // Si _id es un ObjectId (string no numérico), esto devolverá false.
+  const numericId = Number(product.id);
+  const isPriority = !Number.isNaN(numericId) && numericId <= 4;
 
   return (
     <div className="bg-card rounded-2xl overflow-hidden group cursor-pointer hover:shadow-xl transition-all duration-300">
-      
       {/* Imagen del producto */}
       <div className="relative bg-muted aspect-[4/5] w-full overflow-hidden">
         <Image
@@ -38,7 +41,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-105 group-active:scale-100"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-          priority={product.id <= 4}
+          priority={isPriority}
         />
 
         {/* Botón de agregar al carrito */}
@@ -61,7 +64,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         <div className="flex items-center justify-between">
           <span className="text-lg md:text-xl font-bold text-primary">
-            ${product.price.toLocaleString("es-CO")}
+            ${Number(product.price ?? 0).toLocaleString("es-CO")}
           </span>
           <span className="text-xs font-medium text-muted-foreground">
             {isAdded ? "✓ Agregado" : "En stock"}
@@ -69,5 +72,5 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }
